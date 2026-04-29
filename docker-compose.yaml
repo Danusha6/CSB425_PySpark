@@ -14,6 +14,8 @@ services:
     volumes:
       - ./jobs:/opt/spark/jobs
       - ./data:/opt/spark/data
+    networks:
+      - spark-net
 
   spark-worker:
     image: apache/spark:3.5.3
@@ -27,6 +29,8 @@ services:
     volumes:
       - ./jobs:/opt/spark/jobs
       - ./data:/opt/spark/data
+    networks:
+      - spark-net
 
   spark-submit:
     build: .
@@ -38,10 +42,16 @@ services:
       --master spark://spark-master:7077
       --conf spark.driver.extraJavaOptions=-Duser.home=/tmp
       --packages org.apache.spark:spark-avro_2.12:3.5.0
-      /opt/spark/jobs/exercise_solution.py
+      /opt/spark/jobs/exercise.py
     depends_on:
       - spark-master
       - spark-worker
     volumes:
       - ./jobs:/opt/spark/jobs
       - ./data:/opt/spark/data
+    networks:
+      - spark-net
+
+networks:
+  spark-net:
+    driver: bridge
